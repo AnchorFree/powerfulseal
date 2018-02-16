@@ -24,6 +24,8 @@ class PodScenario(Scenario):
         Adds metching for k8s-specific things and pod-specific actions
     """
 
+    PUMBA_PREFIX = "docker run -i --rm -v /var/run/docker.sock:/var/run/docker.sock gaiaadm/pumba pumba "
+
     def __init__(self, name, schema, inventory, k8s_inventory, executor, logger=None):
         super().__init__(name, schema, logger=logger)
         self.inventory = inventory
@@ -88,6 +90,40 @@ class PodScenario(Scenario):
         )
         return pods
 
+    def action_pumba(self, item, params):
+        """ Execute command for each container in pod
+            and substitute {ID} in cmd to container id
+        """
+        node = self.inventory.get_node_by_ip(item.host_ip)
+        if node is None:
+            self.logger.info("Node not found for pod: %s", item)
+            return
+        for container_id in item.container_ids:
+            container_id = container_id.replace("docker://","")
+            self.logger.info("Found container with id: %s", container_id)
+            find_name = "sudo docker inspect -f '{{{{.Name}}}}' {ID}".format(
+                ID=container_id,
+            )
+
+            container_name = None
+            for value in self.executor.execute(
+                    find_name, nodes=[node]
+                ).values():
+                if value["ret_code"] == 0:
+                    container_name = value["stdout"].replace("/","")
+            if container_name is None:
+                self.logger.info("Container name not found for container id: %s", container_id)
+                return
+
+            if 'CONTAINER_NAME' in params['args']:
+                cmd = self.PUMBA_PREFIX + params['args'].format(CONTAINER_NAME=container_name)
+            self.logger.info("Pumba action execute '%s' on %r", cmd, item)
+            for value in self.executor.execute(
+                cmd, nodes=[node]
+            ).values():
+                if value["ret_code"] > 0:
+                    self.logger.info("Error return code: %s", value)
+
     def action_kill(self, item, params):
         """ Kills a pod by executing a docker kill on one of the containers
         """
@@ -116,6 +152,7 @@ class PodScenario(Scenario):
         mapping = {
             "wait": self.action_wait,
             "kill": self.action_kill,
+            "pumba": self.action_pumba,
         }
         return self.act_mapping(items, actions, mapping)
 

@@ -314,7 +314,8 @@
                         "type": "object",
                         "oneOf": [
                             {"$ref": "#/definitions/actionKillPod"},
-                            {"$ref": "#/definitions/actionWait"}
+                            {"$ref": "#/definitions/actionWait"},
+                            {"$ref": "#/definitions/actionPumbaPod"}
                         ]
                     }
                 }
@@ -427,6 +428,24 @@
                 }
             },
             "required": ["kill"]
+        },
+
+        "actionPumbaPod": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "pumba": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "args": {
+                            "type": "string"
+                        }
+                    },
+                    "required": ["args"]
+                }
+            },
+            "required": ["pumba"]
         }
     }
 }

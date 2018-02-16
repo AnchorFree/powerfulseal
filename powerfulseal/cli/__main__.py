@@ -23,7 +23,7 @@ import os
 
 from ..node import NodeInventory
 from ..node.inventory import read_inventory_file_to_dict
-from ..clouddrivers import OpenStackDriver, AWSDriver, NoCloudDriver
+from ..clouddrivers import OpenStackDriver, AWSDriver, AnsibleDriver, NoCloudDriver
 from ..execute import RemoteExecutor
 from ..k8s import K8sClient, K8sInventory
 from .pscmd import PSCmd
@@ -98,19 +98,15 @@ def main(argv):
         action='store_true',
         help="use AWS cloud provider",
     )
+    cloud_options.add_argument('--ansible',
+        default=os.environ.get("ANSIBLE_INVENTORY"),
+        action='store',
+        help="use Ansible inventory provider",
+    )
     cloud_options.add_argument('--no-cloud',
         default=os.environ.get("NO_CLOUD"),
         action='store_true',
         help="don't use cloud provider",
-    )
-    prog.add_argument('--open-stack-cloud-name',
-        default=os.environ.get("OPENSTACK_CLOUD_NAME"),
-        help="the name of the open stack cloud from your config file to use (if using config file)",
-    )
-    cloud_options.add_argument('--aws-cloud',
-        default=os.environ.get("AWS_CLOUD"),
-        action='store_true',
-        help="aws cloud provider",
     )
 
     # KUBERNETES CONFIG
@@ -163,6 +159,9 @@ def main(argv):
     elif args.aws_cloud:
         logger.info("Building AWS driver")
         driver = AWSDriver()
+    elif args.ansible:
+        logger.info("Build Ansible driver")
+        driver = AnsibleDriver(sources=args.ansible)
     else:
         logger.info("No driver - some functionality disabled")
         driver = NoCloudDriver()
