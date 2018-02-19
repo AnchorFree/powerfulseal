@@ -1,0 +1,61 @@
+config:
+  minSecondsBetweenRuns: 60
+  maxSecondsBetweenRuns: 360
+
+nodeScenarios:
+  - name: "prefetch gaiadocker/iproute2 image for pumba netem"
+
+    match:
+      - property:
+          name: "name"
+          value: ".*"
+
+    filters:
+      - dayTime:
+          onlyDays:
+            - "monday"
+          startTime:
+            hour: 10
+            minute: 0
+            second: 0
+          endTime:
+            hour: 10
+            minute: 10
+            second: 0
+
+    # The actions will be executed in the order specified
+    actions:
+      - execute:
+          cmd: "sudo docker pull gaiadocker/iproute2"
+
+
+# the scenarios describing actions on kubernetes pods
+podScenarios:
+  - name: "delete random pods"
+
+    # Match the intial set of pods.
+    # The set of pods will be a union of all matches.
+    match:
+      - namespace:
+          name: "consul"
+
+    filters:
+      - property:
+          name: "state"
+          value: "Running"
+
+      - randomSample:
+          size: 1
+
+    # The actions will be executed in the order specified
+    actions:
+      - pumba:
+          args: "pause --duration 1m {CONTAINER_NAME}"
+      - wait:
+          seconds: 90
+      - pumba:
+          args: "netem --duration 1m --tc-image gaiadocker/iproute2 delay {CONTAINER_NAME}"
+      - wait:
+          seconds: 90
+      - pumba:
+          args: "kill --signal SIGTERM {CONTAINER_NAME}"
