@@ -14,7 +14,9 @@
 # limitations under the License.
 
 
+import time
 import random
+import requests
 from .scenario import Scenario
 
 
@@ -153,6 +155,7 @@ class PodScenario(Scenario):
             "wait": self.action_wait,
             "kill": self.action_kill,
             "pumba": self.action_pumba,
+            "wait_prom": self.action_wait_prom,
         }
         return self.act_mapping(items, actions, mapping)
 

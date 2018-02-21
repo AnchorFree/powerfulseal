@@ -75,7 +75,8 @@
                             {"$ref": "#/definitions/actionStartNode"},
                             {"$ref": "#/definitions/actionStopNode"},
                             {"$ref": "#/definitions/actionExecuteNode"},
-                            {"$ref": "#/definitions/actionWait"}
+                            {"$ref": "#/definitions/actionWait"},
+                            {"$ref": "#/definitions/actionWaitProm"}
                         ]
                     }
                 }
@@ -275,6 +276,36 @@
         },
 
 
+        "actionWaitProm": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "wait_prom": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "query": {
+                            "type": "string"
+                        },
+                        "timeout":{
+                            "type": "number"
+                        },
+                        "request_timeout":{
+                            "type": "number"
+                        },
+                        "sleep_increment":{
+                            "type": "number"
+                        },
+                        "sleep_max":{
+                            "type": "number"
+                        }
+                    },
+                    "required": ["query"]
+                }
+            },
+            "required": ["wait_prom"]
+        },
+
 
         "podScenario": {
             "type": "object",
@@ -315,7 +346,8 @@
                         "oneOf": [
                             {"$ref": "#/definitions/actionKillPod"},
                             {"$ref": "#/definitions/actionWait"},
-                            {"$ref": "#/definitions/actionPumbaPod"}
+                            {"$ref": "#/definitions/actionPumbaPod"},
+                            {"$ref": "#/definitions/actionWaitProm"}
                         ]
                     }
                 }

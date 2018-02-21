@@ -201,6 +201,40 @@ class Scenario():
         self.logger.info("Action sleep for %s seconds", sleep_time)
         time.sleep(sleep_time)
 
+    def action_wait_prom(self, item, params):
+        """ Periodically try to fetch query from prometeus and continue when query return some data
+        """
+        mono_start = time.monotonic()
+        retry = 0
+        sleep_increment = params.get("sleep_increment", 5)
+        sleep_max = params.get("sleep_max"", 30)
+        timeout = params.get("timeout", 300)
+        request_timeout = params.get("request_timeout", 60)
+        while time.monotonic() - mono_start < timeout:
+            sleep_time = sleep_increment * retry
+            time.sleep(sleep_max if sleep_time > sleep_max else sleep_time)
+            retry += 1
+
+            try:
+                result = requests.get(params["query"], timeout=request_timeout)
+            except requests.RequestException:
+                continue
+
+            if result.status_code == requests.codes.ok:
+                try:
+                    data = result.json()
+                except ValueError:
+                    continue
+
+                try:
+                    if len(data["data"]["result"]):
+                        return
+                except KeyError:
+                    continue
+
+        # on timeout
+        raise TimeoutError()
+
     def act_mapping(self, items, actions, mapping):
         """ Executes all the actions on the list of pods.
         """
