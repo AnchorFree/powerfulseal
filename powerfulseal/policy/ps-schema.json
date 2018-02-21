@@ -284,6 +284,9 @@
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
+                        "url": {
+                            "type": "string"
+                        },
                         "query": {
                             "type": "string"
                         },
@@ -300,7 +303,7 @@
                             "type": "number"
                         }
                     },
-                    "required": ["query"]
+                    "required": ["url", "query"]
                 }
             },
             "required": ["wait_prom"]

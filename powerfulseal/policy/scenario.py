@@ -216,7 +216,7 @@ class Scenario():
             retry += 1
 
             try:
-                result = requests.get(params["query"], timeout=request_timeout)
+                result = requests.get(params["url"], params={"query": params["query"]}, timeout=request_timeout)
             except requests.RequestException:
                 continue
 
