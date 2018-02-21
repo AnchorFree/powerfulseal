@@ -207,7 +207,7 @@ class Scenario():
         mono_start = time.monotonic()
         retry = 0
         sleep_increment = params.get("sleep_increment", 5)
-        sleep_max = params.get("sleep_max"", 30)
+        sleep_max = params.get("sleep_max", 30)
         timeout = params.get("timeout", 300)
         request_timeout = params.get("request_timeout", 60)
         while time.monotonic() - mono_start < timeout:
