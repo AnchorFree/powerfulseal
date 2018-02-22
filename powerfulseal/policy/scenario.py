@@ -63,7 +63,11 @@ class Scenario():
         filtered_set = self.filter(initial_set)
         self.logger.debug("Filtered set: %r", filtered_set)
         self.logger.info("Filtered set length: %d", len(filtered_set))
-        self.act(filtered_set)
+        try:
+            self.act(filtered_set)
+        except AbortScenario:
+            self.logger.info("Recieved abort scenario signal. Exiting")
+            return
         self.logger.info("Done")
 
     @abc.abstractmethod
@@ -254,11 +258,7 @@ class Scenario():
                 if key in action:
                     params = action.get(key)
                     for item in items:
-                        try:
-                            method(item, params)
-                        except AbortScenario:
-                            self.logger.info("Recieved abort scenario signal. Exiting")
-                            return
+                        method(item, params)
                         # special case - if we're waiting, only do that on first item
                         if key.startswith("wait"):
                             break
