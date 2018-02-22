@@ -23,6 +23,10 @@ import logging
 import abc
 import requests
 
+class AbortScenario(Exception):
+    pass
+
+
 class Scenario():
     """ Basic class to represent a single testing scenario.
 
@@ -232,15 +236,15 @@ class Scenario():
 
                 try:
                     if len(data["data"]["result"]):
-                        self.logger.info("Prometheus resurn not null result. Exited")
+                        self.logger.info("Prometheus return not null result. Exited")
                         return
                 except KeyError:
                     self.logger.info("Returnet objects didn't have .data.result")
                     continue
 
         # on timeout
-        self.logger.info("Global timeout expired. Raise error")
-        raise TimeoutError()
+        self.logger.info("Global timeout for this action expired")
+        raise AbortScenario()
 
     def act_mapping(self, items, actions, mapping):
         """ Executes all the actions on the list of pods.
@@ -250,9 +254,13 @@ class Scenario():
                 if key in action:
                     params = action.get(key)
                     for item in items:
-                        method(item, params)
+                        try:
+                            method(item, params)
+                        except AbortScenario:
+                            self.logger.info("Recieved abort scenario signal. Exiting")
+                            return
                         # special case - if we're waiting, only do that on first item
-                        if key == "wait":
+                        if key.startswith("wait"):
                             break
 
 
