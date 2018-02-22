@@ -216,23 +216,29 @@ class Scenario():
             retry += 1
 
             try:
+                self.logger.info("Send request to '%s' with query param '%s'", params["url"], params["query"])
                 result = requests.get(params["url"], params={"query": params["query"]}, timeout=request_timeout)
-            except requests.RequestException:
+            except requests.RequestException as exc:
+                self.logger.info("Request failed: %s", exc)
                 continue
 
             if result.status_code == requests.codes.ok:
                 try:
                     data = result.json()
                 except ValueError:
+                    self.logger.info("Error parse result as JSON")
                     continue
 
                 try:
                     if len(data["data"]["result"]):
+                        self.logger.info("Prometheus resurn not null result. Exited")
                         return
                 except KeyError:
+                    self.logger.info("Returnet objects didn't have .data.result")
                     continue
 
         # on timeout
+        self.logger.info("Global timeout expired. Raise error")
         raise TimeoutError()
 
     def act_mapping(self, items, actions, mapping):
