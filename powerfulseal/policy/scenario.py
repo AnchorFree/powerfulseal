@@ -21,6 +21,7 @@ import calendar
 import random
 import logging
 import abc
+import requests
 
 class Scenario():
     """ Basic class to represent a single testing scenario.
