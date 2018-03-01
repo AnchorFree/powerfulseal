@@ -76,7 +76,8 @@
                             {"$ref": "#/definitions/actionStopNode"},
                             {"$ref": "#/definitions/actionExecuteNode"},
                             {"$ref": "#/definitions/actionWait"},
-                            {"$ref": "#/definitions/actionWaitProm"}
+                            {"$ref": "#/definitions/actionWaitProm"},
+                            {"$ref": "#/definitions/actionAlert"}
                         ]
                     }
                 }
@@ -310,6 +311,106 @@
         },
 
 
+        "alertManagers": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "manager": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": ["manager"]
+        },
+
+
+        "alertLabels": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "label": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "value": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": ["label"]
+        },
+
+
+        "alertAnnotations": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "annotation": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "value": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": ["annotation"]
+        },
+
+
+        "actionAlert": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "alert": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "alert_managers": {
+                            "type": "array",
+                            "items": {
+                                "oneOf": [
+                                    {"$ref": "#/definitions/alertManagers"}
+                                ]
+                            }
+                        },
+                        "labels": {
+                            "type": "array",
+                            "items": {
+                                "oneOf": [
+                                    {"$ref": "#/definitions/alertLabels"}
+                                ]
+                            }
+                        },
+                        "annotations": {
+                            "type": "array",
+                            "items": {
+                                "oneOf": [
+                                    {"$ref": "#/definitions/alertAnnotations"}
+                                ]
+                            }
+                        }
+                    },
+                    "required": ["alert_managers"]
+                }
+            },
+            "required": ["alert"]
+        },
+
+
         "podScenario": {
             "type": "object",
             "additionalProperties": false,
@@ -350,7 +451,8 @@
                             {"$ref": "#/definitions/actionKillPod"},
                             {"$ref": "#/definitions/actionWait"},
                             {"$ref": "#/definitions/actionPumbaPod"},
-                            {"$ref": "#/definitions/actionWaitProm"}
+                            {"$ref": "#/definitions/actionWaitProm"},
+                            {"$ref": "#/definitions/actionAlert"}
                         ]
                     }
                 }

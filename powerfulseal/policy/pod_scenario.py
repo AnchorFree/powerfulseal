@@ -116,8 +116,10 @@ class PodScenario(Scenario):
                 self.logger.info("Container name not found for container id: %s", container_id)
                 return
 
-            if 'CONTAINER_NAME' in params['args']:
-                cmd = self.PUMBA_PREFIX + params['args'].format(CONTAINER_NAME=container_name)
+            if "CONTAINER_NAME" in params["args"]:
+                cmd = self.PUMBA_PREFIX + params["args"].format(CONTAINER_NAME=container_name)
+            else:
+                cmd = self.PUMBA_PREFIX + params["args"]
             self.logger.info("Pumba action execute '%s' on %r", cmd, item)
             for value in self.executor.execute(
                 cmd, nodes=[node]
@@ -155,6 +157,7 @@ class PodScenario(Scenario):
             "kill": self.action_kill,
             "pumba": self.action_pumba,
             "wait_prom": self.action_wait_prom,
+            "alert": self.action_alert,
         }
         return self.act_mapping(items, actions, mapping)
 

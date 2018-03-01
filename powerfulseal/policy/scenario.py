@@ -210,6 +210,24 @@ class Scenario():
         self.logger.info("Action sleep for %s seconds", sleep_time)
         time.sleep(sleep_time)
 
+    def action_alert(self, item, params):
+        """ Send alert to AlertManager
+        """
+        data = {}
+        if "labels" in params:
+            data["labels"] = { el["label"]["name"]: el["label"]["value"] for el in params["labels"] }
+
+        if "annotations" in params:
+            data["annotations"] = { el["annotation"]["name"]: el["annotation"]["value"] for el in params["annotations"] }
+
+        for manager in params["alert_managers"]:
+            try:
+                self.logger.info("Send request to '%s' with data '%s'", manager['manager']['url'], data)
+                requests.post(manager["manager"]["url"], json=data)
+            except requests.RequestException as exc:
+                self.logger.info("Request failed: %s", exc)
+                continue
+
     def action_wait_prom(self, item, params):
         """ Periodically try to fetch query from prometeus and continue when query return some data
         """
@@ -240,7 +258,7 @@ class Scenario():
 
                 try:
                     if len(data["data"]["result"]):
-                        self.logger.info("Prometheus return not null result. Exited")
+                        self.logger.info("Prometheus return not null result. Continue with next action")
                         return
                 except KeyError:
                     self.logger.info("Returnet objects didn't have .data.result")

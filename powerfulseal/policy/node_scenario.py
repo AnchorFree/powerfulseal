@@ -82,6 +82,8 @@ class NodeScenario(Scenario):
             "start": self.action_start,
             "wait": self.action_wait,
             "execute": self.action_execute,
+            "wait_prom": self.action_wait_prom,
+            "alert": self.action_alert,
         }
         return self.act_mapping(items, actions, mapping)
 
