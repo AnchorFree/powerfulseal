@@ -223,7 +223,7 @@ class Scenario():
         for manager in params["alert_managers"]:
             try:
                 self.logger.info("Send request to '%s' with data '%s'", manager['manager']['url'], data)
-                requests.post(manager["manager"]["url"], json=data)
+                requests.post(manager["manager"]["url"], json=[data])
             except requests.RequestException as exc:
                 self.logger.info("Request failed: %s", exc)
                 continue
