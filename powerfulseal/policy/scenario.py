@@ -218,7 +218,11 @@ class Scenario():
             data["labels"] = { el["label"]["name"]: el["label"]["value"] for el in params["labels"] }
 
         if "annotations" in params:
-            data["annotations"] = { el["annotation"]["name"]: el["annotation"]["value"] for el in params["annotations"] }
+            data["annotations"] = {
+                el["annotation"]["name"]:
+                    ( el["annotation"]["value"].format(item) if '{}' in el["annotation"]["value"] else el["annotation"]["value"] )
+                for el in params["annotations"]
+            }
 
         for manager in params["alert_managers"]:
             try:
