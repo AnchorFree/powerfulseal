@@ -23,6 +23,7 @@ setup(
         'kubernetes>=1.0.0,<2',
         'PyYAML>=3.12,<4',
         'jsonschema>=2.6.0,<3',
+        'python-dateutil<2.7.0,>=2.1',
         'boto3>=1.5.15,<2.0.0',
         'ansible',
         'jinja2'
