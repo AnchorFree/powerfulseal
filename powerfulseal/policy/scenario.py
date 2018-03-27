@@ -22,6 +22,7 @@ import random
 import logging
 import abc
 import requests
+import jinja2
 
 class AbortScenario(Exception):
     pass
@@ -219,8 +220,7 @@ class Scenario():
 
         if "annotations" in params:
             data["annotations"] = {
-                el["annotation"]["name"]:
-                    ( el["annotation"]["value"].format(item) if '{}' in el["annotation"]["value"] else el["annotation"]["value"] )
+                el["annotation"]["name"]: jinja2.Template(el["annotation"]["value"]).render(item.__dict__)
                 for el in params["annotations"]
             }
 

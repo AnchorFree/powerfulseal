@@ -24,7 +24,8 @@ setup(
         'PyYAML>=3.12,<4',
         'jsonschema>=2.6.0,<3',
         'boto3>=1.5.15,<2.0.0',
-        'ansible'
+        'ansible',
+        'jinja2'
     ],
     entry_points={
         'console_scripts': [
